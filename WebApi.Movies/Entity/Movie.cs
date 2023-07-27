@@ -2,12 +2,12 @@
 {
     public sealed class Movie
     {
-        public Movie(string title, string description, string genre, int year, int durationInMinutes, double rating)
+        public Movie(string title, string summary, string genre, int year, int durationInMinutes, double rating)
         {
             Id = Guid.NewGuid();
 
             Title = title;
-            Summary = description;
+            Summary = summary;
             Genre = genre;
             Year = year;
             DurationInMinutes = durationInMinutes;
