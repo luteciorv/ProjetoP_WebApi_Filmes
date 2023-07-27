@@ -27,10 +27,10 @@
         public DateTime CreatedAt { get; private set; }
         public DateTime UpdatedAt { get; private set; }
 
-        public void Update(string title, string description, string genre, int year, int durationInMinutes, double rating)
+        public void Update(string title, string summary, string genre, int year, int durationInMinutes, double rating)
         {
             Title = title;
-            Summary = description;
+            Summary = summary;
             Genre = genre;
             Year = year;
             DurationInMinutes = durationInMinutes;
