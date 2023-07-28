@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using WebApi.Movies.Entity;
+using WebApi.Movies.Repositories;
 
 namespace WebApi.Movies.Context
 {

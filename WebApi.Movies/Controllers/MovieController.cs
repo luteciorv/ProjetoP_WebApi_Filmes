@@ -2,6 +2,7 @@
 using WebApi.Movies.DTOs;
 using WebApi.Movies.Entity;
 using WebApi.Movies.Extensions;
+using WebApi.Movies.Interfaces;
 
 namespace WebApi.Movies.Controllers
 {
@@ -9,15 +10,11 @@ namespace WebApi.Movies.Controllers
     [ApiController]
     public class MovieController : ControllerBase
     {
-        private static readonly IList<Movie> _movies = new List<Movie>
-        {
-            new("O senhor dos anéis: A sociedade do anel", "Em uma terra fantástica e única, um hobbit recebe de presente de seu tio um anel mágico e maligno que precisa ser destruído antes que caia nas mãos do mal. Para isso, o hobbit Frodo tem um caminho árduo pela frente, onde encontra perigo, medo e seres bizarros. Ao seu lado para o cumprimento desta jornada, ele aos poucos pode contar com outros hobbits, um elfo, um anão, dois humanos e um mago, totalizando nove seres que formam a Sociedade do Anel", "Aventura", 2001, 178, 4.6),
-            new("Os incríveis", "Depois do governo banir o uso de superpoderes, o maior herói do planeta, o Sr. Incrível, vive de forma pacata com sua família. Apesar de estar feliz com a vida doméstica, o Sr. Incrível ainda sente falta dos tempos em que viveu como super-herói, e sua grande chance de entrar em ação novamente surge quando um velho inimigo volta a atacar. Só que agora ele precisa contar com a ajuda de toda a família para vencer o vilão.", "Animação", 2004, 120, 4.5),
-        };
+        private readonly IRepository<Movie> _movieRepository;
 
-        public MovieController()
+        public MovieController(IRepository<Movie> repository)
         {
-
+            _movieRepository = repository;
         }
 
         /// <summary>
@@ -29,13 +26,14 @@ namespace WebApi.Movies.Controllers
         /// <response code="200">Filmes recuperados com sucesso</response>
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public ActionResult<IReadOnlyCollection<ReadMovieDto>> Get(
+        public async  Task<ActionResult<IReadOnlyCollection<ReadMovieDto>>> Get(
             [FromQuery] int skip = 0,
             [FromQuery] int take = 25)
         {
-            var moviesDto = _movies.Skip(skip).Take(take).Select(m => m.MapToReadDto());
+            var movies = await _movieRepository.GetAllAsync(skip, take);
+            var moviesDto = movies?.Select(m => m.MapToReadDto());
 
-            return Ok(moviesDto.ToList());
+            return Ok(moviesDto);
         }
 
 
@@ -49,12 +47,14 @@ namespace WebApi.Movies.Controllers
         [HttpGet("{id:guid}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public ActionResult<ReadMovieDto> Get([FromRoute] Guid id)
+        public async Task<ActionResult<ReadMovieDto>> Get([FromRoute] Guid id)
         {
-            var movie = _movies.FirstOrDefault(m => m.Id == id);
+            var movie = await _movieRepository.GetByIdAsync(id);
             if (movie is null) return NotFound();
 
-            return Ok(movie.MapToReadDto());
+            var movieDto = movie.MapToReadDto();
+           
+            return Ok(movieDto);
         }
 
         /// <summary>
@@ -67,13 +67,14 @@ namespace WebApi.Movies.Controllers
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult Post([FromBody] CreateMovieDto createMovieDto)
+        public async Task<IActionResult> Post([FromBody] CreateMovieDto createMovieDto)
         {
             if(!ModelState.IsValid) return BadRequest(ModelState);
 
             var movie = createMovieDto.MapToMovie();
 
-            _movies.Add(movie);
+            await _movieRepository.CreateAsync(movie);
+            await _movieRepository.SaveAsync();
 
             var readMovieDto = movie.MapToReadDto();
 
@@ -93,18 +94,17 @@ namespace WebApi.Movies.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public IActionResult Put([FromRoute] Guid id, [FromBody] UpdateMovieDto updateMovieDto)
+        public async Task<IActionResult> Put([FromRoute] Guid id, [FromBody] UpdateMovieDto updateMovieDto)
         {
-            if (ModelState.IsValid) return BadRequest(ModelState);
+            if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            var movie = _movies.FirstOrDefault(m => m.Id == id);
+            var movie = await _movieRepository.GetByIdAsync(id);
             if (movie is null) return NotFound();
 
-            int index = _movies.IndexOf(movie);
-            
             movie.Update(updateMovieDto.Title, updateMovieDto.Summary, updateMovieDto.Genre, updateMovieDto.Year, updateMovieDto.DurationInMinutes, updateMovieDto.Rating);
 
-            _movies[index] = movie;
+            _movieRepository.Update(movie);
+            await _movieRepository.SaveAsync();
 
             return NoContent();
         }
@@ -119,12 +119,13 @@ namespace WebApi.Movies.Controllers
         [HttpDelete("{id:guid}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public IActionResult Delete([FromRoute] Guid id)
+        public async Task<IActionResult> Delete([FromRoute] Guid id)
         {
-            var movie = _movies.FirstOrDefault(m => m.Id == id);
+            var movie = await _movieRepository.GetByIdAsync(id);
             if(movie is null) return NotFound();
 
-            _movies.Remove(movie);
+            _movieRepository.Delete(movie);
+            await _movieRepository.SaveAsync();
 
             return NoContent();
         }

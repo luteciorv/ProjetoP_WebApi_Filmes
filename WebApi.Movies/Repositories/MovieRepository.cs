@@ -14,8 +14,8 @@ namespace WebApi.Movies.Repositories
             _context = context;
         }
 
-        public async Task<IReadOnlyCollection<Movie>> GetAllAsync() =>
-            await _context.Movies.ToListAsync();
+        public async Task<IReadOnlyCollection<Movie>> GetAllAsync(int skip, int take) =>
+            await _context.Movies.Skip(skip).Take(take).ToListAsync();
 
         public async Task<Movie?> GetByIdAsync(Guid id) =>
             await _context.Movies.FirstOrDefaultAsync(m => m.Id == id);
@@ -28,5 +28,8 @@ namespace WebApi.Movies.Repositories
 
         public void Update(Movie entity) =>
             _context.Update(entity);
+
+        public async Task SaveAsync() =>
+            await _context.SaveChangesAsync();
     }
 }
