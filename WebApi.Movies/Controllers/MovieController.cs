@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using WebApi.Movies.DTOs;
-using WebApi.Movies.Entity;
 using WebApi.Movies.Extensions;
 using WebApi.Movies.Interfaces;
 
@@ -10,11 +9,11 @@ namespace WebApi.Movies.Controllers
     [ApiController]
     public class MovieController : ControllerBase
     {
-        private readonly IRepository<Movie> _movieRepository;
+        private readonly IMovieService _movieService;
 
-        public MovieController(IRepository<Movie> repository)
+        public MovieController(IMovieService movieService)
         {
-            _movieRepository = repository;
+            _movieService = movieService;
         }
 
         /// <summary>
@@ -30,8 +29,7 @@ namespace WebApi.Movies.Controllers
             [FromQuery] int skip = 0,
             [FromQuery] int take = 25)
         {
-            var movies = await _movieRepository.GetAllAsync(skip, take);
-            var moviesDto = movies?.Select(m => m.MapToReadDto());
+            var moviesDto = await _movieService.GetAllAsync(skip, take);
 
             return Ok(moviesDto);
         }
@@ -49,10 +47,7 @@ namespace WebApi.Movies.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<ReadMovieDto>> Get([FromRoute] Guid id)
         {
-            var movie = await _movieRepository.GetByIdAsync(id);
-            if (movie is null) return NotFound();
-
-            var movieDto = movie.MapToReadDto();
+            var movieDto = await _movieService.GetByIdAsync(id);
            
             return Ok(movieDto);
         }
@@ -60,25 +55,23 @@ namespace WebApi.Movies.Controllers
         /// <summary>
         /// Adiciona um filme
         /// </summary>
-        /// <param name="createMovieDto">DTO do filme a ser criado</param>
+        /// <param name="inputModel">Input Model do filme a ser criado</param>
         /// <returns>IActionResult</returns>
         /// <response code="201">Filme criado com sucesso</response>
         /// <response code="400">Não foi possível criar o filme. Algumas informações inválidas foram informadas</response>
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Post([FromBody] CreateMovieDto createMovieDto)
+        public async Task<IActionResult> Post([FromBody] CreateMovieInputModel inputModel)
         {
             if(!ModelState.IsValid) return BadRequest(ModelState);
 
-            var movie = createMovieDto.MapToMovie();
+            var movieDto = inputModel.MapToCreateMovieDto();
+            await _movieService.CreateAsync(movieDto);
 
-            await _movieRepository.CreateAsync(movie);
-            await _movieRepository.SaveAsync();
+            var readMovieDto = await _movieService.GetByIdAsync(movieDto.Id);
 
-            var readMovieDto = movie.MapToReadDto();
-
-            return CreatedAtAction(nameof(Get), new {movie.Id}, readMovieDto);
+            return CreatedAtAction(nameof(Get), new { readMovieDto.Id}, readMovieDto);
         }
 
         /// <summary>
@@ -98,13 +91,7 @@ namespace WebApi.Movies.Controllers
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            var movie = await _movieRepository.GetByIdAsync(id);
-            if (movie is null) return NotFound();
-
-            movie.Update(updateMovieDto.Title, updateMovieDto.Summary, updateMovieDto.Genre, updateMovieDto.Year, updateMovieDto.DurationInMinutes, updateMovieDto.Rating);
-
-            _movieRepository.Update(movie);
-            await _movieRepository.SaveAsync();
+            await _movieService.UpdateAsync(id, updateMovieDto);
 
             return NoContent();
         }
@@ -121,11 +108,7 @@ namespace WebApi.Movies.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Delete([FromRoute] Guid id)
         {
-            var movie = await _movieRepository.GetByIdAsync(id);
-            if(movie is null) return NotFound();
-
-            _movieRepository.Delete(movie);
-            await _movieRepository.SaveAsync();
+            await _movieService.DeleteAsync(id);
 
             return NoContent();
         }

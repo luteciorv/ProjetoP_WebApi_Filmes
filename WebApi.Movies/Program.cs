@@ -5,6 +5,7 @@ using WebApi.Movies.Context;
 using WebApi.Movies.Entity;
 using WebApi.Movies.Interfaces;
 using WebApi.Movies.Repositories;
+using WebApi.Movies.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +16,7 @@ builder.Services.AddDbContext<DataContext>(options =>
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
 });
 
+builder.Services.AddScoped<IMovieService, MovieService>();
 builder.Services.AddScoped<IRepository<Movie>, MovieRepository>();
 
 builder.Services.AddControllers();

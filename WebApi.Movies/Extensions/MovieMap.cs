@@ -13,5 +13,8 @@ namespace WebApi.Movies.Extensions
 
         public static ReadMovieDto MapToReadDto(this Movie entity) =>
             new(entity.Id, entity.Title, entity.Summary, entity.Genre, entity.Year, entity.DurationInMinutes, entity.Rating);
+
+        public static CreateMovieDto MapToCreateMovieDto(this CreateMovieInputModel inputModel) =>
+            new(inputModel.Title, inputModel.Summary, inputModel.Genre, inputModel.Year, inputModel.DurationInMinutes, inputModel.Rating);
     }
 }
