@@ -1,5 +1,6 @@
 ﻿using WebApi.Movies.DTOs;
 using WebApi.Movies.Entity;
+using WebApi.Movies.Exceptions;
 using WebApi.Movies.Extensions;
 using WebApi.Movies.Interfaces;
 
@@ -24,7 +25,7 @@ namespace WebApi.Movies.Services
 
         public async Task<ReadMovieDto> GetByIdAsync(Guid id)
         {
-            var movie = await _repository.GetByIdAsync(id) ?? throw new Exception($"O filme de id {id} não foi encontrado.");
+            var movie = await _repository.GetByIdAsync(id) ?? throw new EntityNotFoundException($"O filme de id {id} não foi encontrado.");
 
             return movie.MapToReadDto();
         }
@@ -41,7 +42,7 @@ namespace WebApi.Movies.Services
 
         public async Task DeleteAsync(Guid id)
         {
-            var movie = await _repository.GetByIdAsync(id) ?? throw new Exception($"O filme de id {id} não foi encontrado.");
+            var movie = await _repository.GetByIdAsync(id) ?? throw new EntityNotFoundException($"O filme de id {id} não foi encontrado.");
 
             _repository.Delete(movie);
             await _repository.SaveAsync();
@@ -49,7 +50,7 @@ namespace WebApi.Movies.Services
 
         public async Task UpdateAsync(Guid id, UpdateMovieDto dto)
         {
-            var movie = await _repository.GetByIdAsync(id) ?? throw new Exception($"O filme de id {id} não foi encontrado.");
+            var movie = await _repository.GetByIdAsync(id) ?? throw new EntityNotFoundException($"O filme de id {id} não foi encontrado.");
             
             movie.Update(dto.Title, dto.Summary, dto.Genre, dto.Year, dto.DurationInMinutes, dto.Rating);
 

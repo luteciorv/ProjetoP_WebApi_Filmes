@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using WebApi.Movies.DTOs;
+using WebApi.Movies.Exceptions;
 using WebApi.Movies.Extensions;
 using WebApi.Movies.Interfaces;
 
 namespace WebApi.Movies.Controllers
 {
+    [TypeFilter(typeof(ExceptionFilter))]
     [Route("api/filmes")]
     [ApiController]
     public class MovieController : ControllerBase
@@ -30,7 +32,6 @@ namespace WebApi.Movies.Controllers
             [FromQuery] int take = 25)
         {
             var moviesDto = await _movieService.GetAllAsync(skip, take);
-
             return Ok(moviesDto);
         }
 
@@ -47,8 +48,7 @@ namespace WebApi.Movies.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<ReadMovieDto>> Get([FromRoute] Guid id)
         {
-            var movieDto = await _movieService.GetByIdAsync(id);
-           
+            var movieDto = await _movieService.GetByIdAsync(id);       
             return Ok(movieDto);
         }
 
@@ -68,7 +68,6 @@ namespace WebApi.Movies.Controllers
 
             var movieDto = inputModel.MapToCreateMovieDto();
             await _movieService.CreateAsync(movieDto);
-
             var readMovieDto = await _movieService.GetByIdAsync(movieDto.Id);
 
             return CreatedAtAction(nameof(Get), new { readMovieDto.Id}, readMovieDto);
@@ -92,7 +91,6 @@ namespace WebApi.Movies.Controllers
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
             await _movieService.UpdateAsync(id, updateMovieDto);
-
             return NoContent();
         }
 
@@ -109,7 +107,6 @@ namespace WebApi.Movies.Controllers
         public async Task<IActionResult> Delete([FromRoute] Guid id)
         {
             await _movieService.DeleteAsync(id);
-
             return NoContent();
         }
     }
