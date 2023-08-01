@@ -16,7 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\WebApi.Movies\WebApi.Movies.csproj" />
+    <ProjectReference Include="..\WebApi.Movies\WebApi.Theaters.csproj" />
   </ItemGroup>
 
 </Project>
