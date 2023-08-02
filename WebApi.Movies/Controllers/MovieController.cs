@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using WebApi.Cinema.DTOs.Movie;
+using WebApi.Cinema.Interfaces.Services;
 using WebApi.Movies.Exceptions;
 using WebApi.Movies.Extensions;
-using WebApi.Movies.Interfaces;
 
 namespace WebApi.Movies.Controllers
 {
@@ -32,6 +32,20 @@ namespace WebApi.Movies.Controllers
             [FromQuery] int take = 25)
         {
             var moviesDto = await _movieService.GetAllAsync(skip, take);
+            return Ok(moviesDto);
+        }
+
+        /// <summary>
+        /// Recupera todos os filmes cadastrados do gênero informado
+        /// </summary>
+        /// <param name="id">Identificador do gênero</param>
+        /// <returns>Um IReadOnlyCollection dos filmes recuperados</returns>
+        /// <response code="200">Filmes recuperados com sucesso</response>
+        [HttpGet("generos/{id:guid}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<IReadOnlyCollection<ReadMovieDto>>> GetByGenre([FromRoute] Guid id)
+        {
+            var moviesDto = await _movieService.GetAllByGenreAsync(id);
             return Ok(moviesDto);
         }
 

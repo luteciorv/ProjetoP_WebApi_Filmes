@@ -1,4 +1,4 @@
-﻿namespace WebApi.Cinema.Entity
+﻿namespace WebApi.Cinema.Entities
 {
     public class Genre : EntityBase
     {

@@ -1,4 +1,4 @@
-﻿using WebApi.Cinema.Entity;
+﻿using WebApi.Cinema.Entities;
 
 namespace WebApi.Movies.Entity
 {

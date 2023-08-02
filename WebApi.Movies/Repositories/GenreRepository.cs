@@ -1,35 +1,26 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using WebApi.Cinema.Entity;
+using WebApi.Cinema.Entities;
+using WebApi.Cinema.Interfaces.Repositories;
 using WebApi.Movies.Context;
-using WebApi.Movies.Interfaces;
 
 namespace WebApi.Cinema.Repositories
 {
-    public class GenreRepository : IRepository<Genre>
+    public class GenreRepository : Repository<Genre>, IGenreRepository
     {
-        private readonly DataContext _context;
+        public GenreRepository(DataContext dataContext) :base(dataContext) { }
 
-        public GenreRepository(DataContext context)
-        {
-            _context = context;
-        }
+        public new async Task<IReadOnlyCollection<Genre>> GetAllAsync(int skip, int take) =>
+            await _dataContext.Genres.Skip(skip).Take(take)
+                .Include(g => g.MoviesGenres)
+                .ThenInclude(mg => mg.Movie)
+                .AsNoTracking()
+                .ToListAsync();
 
-        public async Task<IReadOnlyCollection<Genre>> GetAllAsync(int skip, int take) =>
-            await _context.Genres.Skip(skip).Take(take).AsNoTracking().ToListAsync();
-
-        public async Task<Genre?> GetByIdAsync(Guid id) =>
-            await _context.Genres.AsNoTracking().FirstOrDefaultAsync(g => g.Id == id);
-
-        public async Task CreateAsync(Genre entity) =>
-            await _context.Genres.AddAsync(entity);
-
-        public void Update(Genre entity) =>
-            _context.Genres.Update(entity);
-
-        public void Delete(Genre entity) =>
-            _context.Genres.Remove(entity);
-
-        public async Task SaveAsync() =>
-            await _context.SaveChangesAsync();
+        public new async Task<Genre?> GetByIdAsync(Guid id) =>
+            await _dataContext.Genres
+                .Include(g => g.MoviesGenres)
+                .ThenInclude(mg => mg.Movie)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(g => g.Id == id);
     }
 }

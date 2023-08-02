@@ -1,28 +1,32 @@
-﻿using Microsoft.EntityFrameworkCore;
-using WebApi.Cinema.DTOs.Movie;
-using WebApi.Cinema.Entity;
-using WebApi.Movies.Context;
-using WebApi.Movies.Entity;
+﻿using WebApi.Cinema.DTOs.Movie;
+using WebApi.Cinema.Entities;
+using WebApi.Cinema.Interfaces.Repositories;
+using WebApi.Cinema.Interfaces.Services;
 using WebApi.Movies.Exceptions;
 using WebApi.Movies.Extensions;
-using WebApi.Movies.Interfaces;
 
 namespace WebApi.Movies.Services
 {
     public class MovieService : IMovieService
     {
-        private readonly DataContext _context;
-        private readonly IRepository<Movie> _repository;
+        private readonly IUnitOfWork _uow;
 
-        public MovieService(IRepository<Movie> repository, DataContext context)
+        public MovieService(IUnitOfWork uow)
         {
-            _repository = repository;
-            _context = context;
+            _uow = uow;
         }
 
         public async Task<IReadOnlyCollection<ReadMovieDto>> GetAllAsync(int skip, int take)
         {
-            var movies = await _repository.GetAllAsync(skip, take);
+            var movies = await _uow.Movies.GetAllAsync(skip, take);
+            var moviesDto = movies.Select(m => m.MapToReadDto());
+
+            return moviesDto.ToList();
+        }
+
+        public async Task<IReadOnlyCollection<ReadMovieDto>> GetAllByGenreAsync(Guid id)
+        {
+            var movies = await _uow.Movies.GetAllByGenreAsync(id);
             var moviesDto = movies.Select(m => m.MapToReadDto());
 
             return moviesDto.ToList();
@@ -30,7 +34,8 @@ namespace WebApi.Movies.Services
 
         public async Task<ReadMovieDto> GetByIdAsync(Guid id)
         {
-            var movie = await _repository.GetByIdAsync(id) ?? throw new EntityNotFoundException($"O filme de id {id} não foi encontrado.");
+            var movie = await _uow.Movies.GetByIdAsync(id) ?? 
+                        throw new EntityNotFoundException($"O filme de id {id} não foi encontrado.");
 
             return movie.MapToReadDto();
         }
@@ -39,35 +44,37 @@ namespace WebApi.Movies.Services
         {
             var movie = dto.MapToMovie();
 
-            await _repository.CreateAsync(movie);
+            await _uow.Movies.CreateAsync(movie);
 
             foreach (var genreId in dto.GenresId)
             {
                 var movieGenre = new MovieGenre(movie.Id, genreId);
-                await _context.MoviesGenres.AddAsync(movieGenre);
+                await _uow.MoviesGenres.CreateAsync(movieGenre);
             }
 
-            await _context.SaveChangesAsync();
+            await _uow.CommitAsync();
 
             dto.Id = movie.Id;
         }
 
         public async Task DeleteAsync(Guid id)
         {
-            var movie = await _repository.GetByIdAsync(id) ?? throw new EntityNotFoundException($"O filme de id {id} não foi encontrado.");
+            var movie = await _uow.Movies.GetByIdAsync(id) ?? 
+                        throw new EntityNotFoundException($"O filme de id {id} não foi encontrado.");
 
-            _repository.Delete(movie);
-            await _repository.SaveAsync();
+            _uow.Movies.Delete(movie);
+            await _uow.CommitAsync();
         }
 
         public async Task UpdateAsync(Guid id, UpdateMovieDto dto)
         {
-            var movie = await _repository.GetByIdAsync(id) ?? throw new EntityNotFoundException($"O filme de id {id} não foi encontrado.");
+            var movie = await _uow.Movies.GetByIdAsync(id) ?? 
+                        throw new EntityNotFoundException($"O filme de id {id} não foi encontrado.");
 
             movie.Update(dto.Title, dto.Summary, dto.Genre, dto.Year, dto.DurationInMinutes, dto.Rating);
 
-            _repository.Update(movie);
-            await _repository.SaveAsync();
+            _uow.Movies.Update(movie);
+            await _uow.CommitAsync();
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿using WebApi.Cinema.DTOs.Genre;
 
-namespace WebApi.Cinema.Interfaces
+namespace WebApi.Cinema.Interfaces.Services
 {
     public interface IGenreService
     {

@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using WebApi.Cinema.Entity;
+using WebApi.Cinema.Entities;
 using WebApi.Movies.Entity;
 
 namespace WebApi.Movies.Context

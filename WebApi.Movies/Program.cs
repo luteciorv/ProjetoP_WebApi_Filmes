@@ -1,13 +1,13 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
-using WebApi.Cinema.Entity;
-using WebApi.Cinema.Interfaces;
+using WebApi.Cinema.Entities;
+using WebApi.Cinema.Interfaces.Repositories;
+using WebApi.Cinema.Interfaces.Services;
 using WebApi.Cinema.Repositories;
 using WebApi.Cinema.Services;
 using WebApi.Movies.Context;
 using WebApi.Movies.Entity;
-using WebApi.Movies.Interfaces;
 using WebApi.Movies.Repositories;
 using WebApi.Movies.Services;
 
@@ -20,11 +20,13 @@ builder.Services.AddDbContext<DataContext>(options =>
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
 });
 
-builder.Services.AddScoped<IMovieService, MovieService>();
-builder.Services.AddScoped<IGenreService, GenreService>();
+builder.Services.AddTransient<IMovieService, MovieService>();
+builder.Services.AddTransient<IGenreService, GenreService>();
 
-builder.Services.AddScoped<IRepository<Movie>, MovieRepository>();
-builder.Services.AddScoped<IRepository<Genre>, GenreRepository>();
+builder.Services.AddTransient<IMovieRepository, MovieRepository>();
+builder.Services.AddTransient<IGenreRepository, GenreRepository>();
+builder.Services.AddTransient<IMovieGenreRepository, MovieGenreRepository>();
+builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

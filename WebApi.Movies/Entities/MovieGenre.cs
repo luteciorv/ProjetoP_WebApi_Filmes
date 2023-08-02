@@ -1,6 +1,6 @@
 ﻿using WebApi.Movies.Entity;
 
-namespace WebApi.Cinema.Entity
+namespace WebApi.Cinema.Entities
 {
     public sealed class MovieGenre
     {

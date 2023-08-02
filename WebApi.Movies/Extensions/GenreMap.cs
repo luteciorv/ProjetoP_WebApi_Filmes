@@ -1,5 +1,5 @@
 ﻿using WebApi.Cinema.DTOs.Genre;
-using WebApi.Cinema.Entity;
+using WebApi.Cinema.Entities;
 
 namespace WebApi.Cinema.Extensions
 {

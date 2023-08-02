@@ -2,7 +2,7 @@
 using WebApi.Cinema.DTOs.Genre;
 using WebApi.Cinema.DTOs.Movie;
 using WebApi.Cinema.Extensions;
-using WebApi.Cinema.Interfaces;
+using WebApi.Cinema.Interfaces.Services;
 using WebApi.Movies.Exceptions;
 
 namespace WebApi.Cinema.Controllers
