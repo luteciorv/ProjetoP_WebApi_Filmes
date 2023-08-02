@@ -1,4 +1,4 @@
-﻿using WebApi.Movies.DTOs;
+﻿using WebApi.DTOs.Movie;
 using WebApi.Movies.Entity;
 using WebApi.Movies.Exceptions;
 using WebApi.Movies.Extensions;

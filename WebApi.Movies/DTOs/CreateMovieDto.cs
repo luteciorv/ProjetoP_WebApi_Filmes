@@ -1,4 +1,4 @@
-﻿namespace WebApi.Theaters.DTOs.Movie
+﻿namespace WebApi.DTOs.Movie
 {
     public class CreateMovieDto
     {

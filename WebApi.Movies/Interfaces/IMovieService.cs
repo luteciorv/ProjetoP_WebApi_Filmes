@@ -1,4 +1,4 @@
-﻿using WebApi.Movies.DTOs;
+﻿using WebApi.DTOs.Movie;
 
 namespace WebApi.Movies.Interfaces
 {

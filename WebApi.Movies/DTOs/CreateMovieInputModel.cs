@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace WebApi.Theaters.DTOs.Movie
+namespace WebApi.DTOs.Movie
 {
     public record CreateMovieInputModel
     {

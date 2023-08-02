@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using WebApi.Movies.DTOs;
+using WebApi.DTOs.Movie;
 using WebApi.Movies.Exceptions;
 using WebApi.Movies.Extensions;
 using WebApi.Movies.Interfaces;
@@ -68,9 +68,8 @@ namespace WebApi.Movies.Controllers
 
             var movieDto = inputModel.MapToCreateMovieDto();
             await _movieService.CreateAsync(movieDto);
-            var readMovieDto = await _movieService.GetByIdAsync(movieDto.Id);
 
-            return CreatedAtAction(nameof(Get), new { readMovieDto.Id}, readMovieDto);
+            return CreatedAtAction(nameof(Get), new { movieDto.Id}, inputModel);
         }
 
         /// <summary>

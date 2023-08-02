@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using WebApi.Cinema.Entity;
 using WebApi.Movies.Entity;
-using WebApi.Movies.Repositories;
 
 namespace WebApi.Movies.Context
 {
@@ -12,5 +12,6 @@ namespace WebApi.Movies.Context
         }
 
         public DbSet<Movie> Movies { get; set; }
+        public DbSet<Genre> Genres { get; set; }
     }
 }
