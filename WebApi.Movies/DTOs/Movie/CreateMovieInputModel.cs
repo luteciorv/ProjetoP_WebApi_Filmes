@@ -26,5 +26,8 @@ namespace WebApi.Cinema.DTOs.Movie
 
         [Required(ErrorMessage = $"O campo {nameof(Rating)} é obrigatório.")]
         public double Rating { get; set; }
+
+        [Required(ErrorMessage = $"O campo {nameof(GenresId)} é obrigatório.")]
+        public List<Guid> GenresId { get; set; } = null!;
     }
 }

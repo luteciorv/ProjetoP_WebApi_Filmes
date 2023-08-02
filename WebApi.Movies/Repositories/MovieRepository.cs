@@ -15,10 +15,18 @@ namespace WebApi.Movies.Repositories
         }
 
         public async Task<IReadOnlyCollection<Movie>> GetAllAsync(int skip, int take) =>
-            await _context.Movies.Skip(skip).Take(take).ToListAsync();
+            await _context.Movies.Skip(skip).Take(take)
+                .Include(m => m.MoviesGenres)
+                .ThenInclude(mg => mg.Genre)
+                .AsNoTracking()
+                .ToListAsync();
 
         public async Task<Movie?> GetByIdAsync(Guid id) =>
-            await _context.Movies.FirstOrDefaultAsync(m => m.Id == id);
+            await _context.Movies
+                .Include(m => m.MoviesGenres)
+                .ThenInclude(mg => mg.Genre)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(m => m.Id == id);
 
         public async Task CreateAsync(Movie entity) =>
             await _context.AddAsync(entity);

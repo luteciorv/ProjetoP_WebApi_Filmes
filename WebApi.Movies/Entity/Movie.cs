@@ -21,6 +21,8 @@ namespace WebApi.Movies.Entity
         public int DurationInMinutes { get; private set; }
         public double Rating { get; private set; }
 
+        public IReadOnlyCollection<MovieGenre> MoviesGenres { get; private set; } = null!;
+
         public void Update(string title, string summary, string genre, int year, int durationInMinutes, double rating)
         {
             Title = title;

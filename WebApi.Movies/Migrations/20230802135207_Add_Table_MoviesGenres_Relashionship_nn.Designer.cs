@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebApi.Movies.Context;
 
@@ -10,9 +11,11 @@ using WebApi.Movies.Context;
 namespace WebApi.Movies.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20230802135207_Add_Table_MoviesGenres_Relashionship_nn")]
+    partial class Add_Table_MoviesGenres_Relashionship_nn
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -37,7 +40,7 @@ namespace WebApi.Movies.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Genres", (string)null);
+                    b.ToTable("Genres");
                 });
 
             modelBuilder.Entity("WebApi.Cinema.Entity.MovieGenre", b =>
@@ -52,7 +55,7 @@ namespace WebApi.Movies.Migrations
 
                     b.HasIndex("GenreId");
 
-                    b.ToTable("MoviesGenres", (string)null);
+                    b.ToTable("MoviesGenres");
                 });
 
             modelBuilder.Entity("WebApi.Movies.Entity.Movie", b =>
@@ -90,7 +93,7 @@ namespace WebApi.Movies.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Movies", (string)null);
+                    b.ToTable("Movies");
                 });
 
             modelBuilder.Entity("WebApi.Cinema.Entity.MovieGenre", b =>

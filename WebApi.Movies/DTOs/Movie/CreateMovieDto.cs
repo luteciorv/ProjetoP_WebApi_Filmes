@@ -2,7 +2,7 @@
 {
     public class CreateMovieDto
     {
-        public CreateMovieDto(string title, string summary, string genre, int year, int durationInMinutes, double rating)
+        public CreateMovieDto(string title, string summary, string genre, int year, int durationInMinutes, double rating, List<Guid> genresId)
         {
             Title = title;
             Summary = summary;
@@ -10,6 +10,8 @@
             Year = year;
             DurationInMinutes = durationInMinutes;
             Rating = rating;
+
+            GenresId = genresId;
         }
 
         public Guid Id { get; set; }
@@ -19,5 +21,6 @@
         public int Year { get; private set; }
         public int DurationInMinutes { get; private set; }
         public double Rating { get; private set; }
+        public List<Guid> GenresId { get; private set; }
     }
 }

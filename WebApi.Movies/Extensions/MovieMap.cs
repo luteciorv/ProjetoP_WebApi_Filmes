@@ -12,9 +12,9 @@ namespace WebApi.Movies.Extensions
             new(dto.Title, dto.Summary, dto.Genre, dto.Year, dto.DurationInMinutes, dto.Rating);
 
         public static ReadMovieDto MapToReadDto(this Movie entity) =>
-            new(entity.Id, entity.Title, entity.Summary, entity.Genre, entity.Year, entity.DurationInMinutes, entity.Rating);
+            new(entity.Id, entity.Title, entity.Summary, entity.Genre, entity.Year, entity.DurationInMinutes, entity.Rating, entity.MoviesGenres.Select(g => g.Genre.Name));
 
         public static CreateMovieDto MapToCreateMovieDto(this CreateMovieInputModel inputModel) =>
-            new(inputModel.Title, inputModel.Summary, inputModel.Genre, inputModel.Year, inputModel.DurationInMinutes, inputModel.Rating);
+            new(inputModel.Title, inputModel.Summary, inputModel.Genre, inputModel.Year, inputModel.DurationInMinutes, inputModel.Rating, inputModel.GenresId);
     }
 }

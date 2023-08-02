@@ -1,4 +1,7 @@
-﻿using WebApi.Cinema.DTOs.Movie;
+﻿using Microsoft.EntityFrameworkCore;
+using WebApi.Cinema.DTOs.Movie;
+using WebApi.Cinema.Entity;
+using WebApi.Movies.Context;
 using WebApi.Movies.Entity;
 using WebApi.Movies.Exceptions;
 using WebApi.Movies.Extensions;
@@ -8,11 +11,13 @@ namespace WebApi.Movies.Services
 {
     public class MovieService : IMovieService
     {
+        private readonly DataContext _context;
         private readonly IRepository<Movie> _repository;
 
-        public MovieService(IRepository<Movie> repository)
+        public MovieService(IRepository<Movie> repository, DataContext context)
         {
             _repository = repository;
+            _context = context;
         }
 
         public async Task<IReadOnlyCollection<ReadMovieDto>> GetAllAsync(int skip, int take)
@@ -35,7 +40,14 @@ namespace WebApi.Movies.Services
             var movie = dto.MapToMovie();
 
             await _repository.CreateAsync(movie);
-            await _repository.SaveAsync();
+
+            foreach (var genreId in dto.GenresId)
+            {
+                var movieGenre = new MovieGenre(movie.Id, genreId);
+                await _context.MoviesGenres.AddAsync(movieGenre);
+            }
+
+            await _context.SaveChangesAsync();
 
             dto.Id = movie.Id;
         }
@@ -51,7 +63,7 @@ namespace WebApi.Movies.Services
         public async Task UpdateAsync(Guid id, UpdateMovieDto dto)
         {
             var movie = await _repository.GetByIdAsync(id) ?? throw new EntityNotFoundException($"O filme de id {id} não foi encontrado.");
-            
+
             movie.Update(dto.Title, dto.Summary, dto.Genre, dto.Year, dto.DurationInMinutes, dto.Rating);
 
             _repository.Update(movie);
