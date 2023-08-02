@@ -1,4 +1,4 @@
-﻿using WebApi.DTOs.Movie;
+﻿using WebApi.Cinema.DTOs.Movie;
 using WebApi.Movies.Entity;
 
 namespace WebApi.Movies.Extensions

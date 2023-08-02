@@ -1,6 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
+using WebApi.Cinema.Entity;
+using WebApi.Cinema.Interfaces;
+using WebApi.Cinema.Repositories;
+using WebApi.Cinema.Services;
 using WebApi.Movies.Context;
 using WebApi.Movies.Entity;
 using WebApi.Movies.Interfaces;
@@ -17,7 +21,10 @@ builder.Services.AddDbContext<DataContext>(options =>
 });
 
 builder.Services.AddScoped<IMovieService, MovieService>();
+builder.Services.AddScoped<IGenreService, GenreService>();
+
 builder.Services.AddScoped<IRepository<Movie>, MovieRepository>();
+builder.Services.AddScoped<IRepository<Genre>, GenreRepository>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -27,7 +34,7 @@ builder.Services.AddSwaggerGen(options =>
     options.SwaggerDoc("v1", new OpenApiInfo
     {
         Title = "WebApi Filmes",
-        Version = "v1",
+        Version = "v1.1",
     });
 
     var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";

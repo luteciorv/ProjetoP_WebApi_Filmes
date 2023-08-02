@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace WebApi.DTOs.Movie
+namespace WebApi.Cinema.DTOs.Movie
 {
     public record UpdateMovieDto
     {

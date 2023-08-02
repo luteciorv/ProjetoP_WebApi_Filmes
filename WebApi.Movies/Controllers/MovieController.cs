@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using WebApi.DTOs.Movie;
+using WebApi.Cinema.DTOs.Movie;
 using WebApi.Movies.Exceptions;
 using WebApi.Movies.Extensions;
 using WebApi.Movies.Interfaces;
@@ -27,7 +27,7 @@ namespace WebApi.Movies.Controllers
         /// <response code="200">Filmes recuperados com sucesso</response>
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async  Task<ActionResult<IReadOnlyCollection<ReadMovieDto>>> Get(
+        public async Task<ActionResult<IReadOnlyCollection<ReadMovieDto>>> Get(
             [FromQuery] int skip = 0,
             [FromQuery] int take = 25)
         {
